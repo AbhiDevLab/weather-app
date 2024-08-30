@@ -21,8 +21,8 @@ const Current = ({ data }: CurrentProps) => {
   const currentDate = getCurrentDate();
   const weatherIcon = data.current.condition.icon;
   return (
-    <div className=" flex flex-col mb-8 md:mb-0 items-start gap-2 w-1/2">
-      <div className=" flex items-center">
+    <div className=" flex flex-col mb-8 md:mb-0 items-start gap-2 w-1/2 ml-[600px]">
+      <div className=" flex items-center justify-center">
         <div>
           <h1 className=" text-3xl text-white">Today</h1>
           <p className=" text-white">{currentDate}</p>

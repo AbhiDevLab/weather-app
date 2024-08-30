@@ -6,14 +6,55 @@ import Current from "./components/Current";
 import WeekForecast from "./components/WeekForecast";
 import WeatherDetails from "./components/WeatherDetails";
 
+type WeatherData = {
+  current: {
+    condition: {
+      icon: string;
+      text: string;
+    };
+    temp_f: number;
+    wind_mph: number;
+    humidity: number;
+    wind_dir: string;
+    pressure_mb: number;
+    feelslike_f: number;
+    vis_km: number;
+  };
+  location: {
+    name: string;
+    region: string;
+  };
+  forecast: {
+    forecastday: DayForecast[];
+  };
+};
+
+type DayForecast = {
+  date: string;
+  day: {
+    maxtemp_f: number;
+    mintemp_f: number;
+    avgtemp_f: number;
+    condition: {
+      icon: string;
+      text: string;
+    };
+  };
+  astro: {
+    sunrise: string;
+    sunset: string;
+  };
+};
+
 const Home = () => {
-  const [data, setData] = useState({});
+  const [data, setData] = useState<WeatherData | null>(null);
   const [location, setLocation] = useState("");
   const [error, setError] = useState("");
 
+  // const url =
+  ("http://api.weatherapi.com/v1/forecast.json?key=8b3ef4b05ea24bbf9b3161917242707&q=${location}&days=7&aqi=yes&alerts=yes");
   const url =
-    "http://api.weatherapi.com/v1/forecast.json?key=${process.env.local.NEXT_PUBLIC_WEATHER_API_KEY}&q=${location}&days=7&aqi=yes&alerts=yes";
-
+    "https://api.weatherapi.com/v1/forecast.json?q=${location}&days=1&key=%208b3ef4b05ea24bbf9b3161917242707";
   const handleSearch = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -22,19 +63,19 @@ const Home = () => {
         if (!response.ok) {
           throw new Error();
         }
-        const data = await response.json();
+        const data: WeatherData = await response.json();
         setData(data);
         setLocation("");
         setError("");
       } catch (error) {
         setError("City not found");
-        setData({});
+        setData(null);
       }
     }
   };
 
   let content;
-  if (Object.keys(data).length === 0 && error === "") {
+  if (data === null && error === "") {
     content = (
       <div className=" text-white text-center h-screen mt-[5rem]">
         <h2 className=" text-3xl font-bold mb-4">Welcome to the Weather App</h2>
@@ -48,7 +89,7 @@ const Home = () => {
         <p className=" text-xl">Enter a Valid City</p>
       </div>
     );
-  } else {
+  } else if (data !== null) {
     content = (
       <>
         <div>
